@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todobloc/domain/models/todo_model.dart';
-import 'package:todobloc/presentation/todo_cubit.dart';
+import 'package:todobloc/presentation/todo_bloc.dart';
+// import 'package:todobloc/presentation/todo_cubit.dart';
 
 class TodoView extends StatelessWidget {
   const TodoView({super.key});
 
   void _showAddTodoBox(BuildContext context) {
-    final todoCubit = context.read<TodoCubit>();
+    final todoBloc = context.read<TodoBloc>();
     final textController = TextEditingController();
 
     showDialog(
@@ -17,7 +18,7 @@ class TodoView extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () => {
-                          todoCubit.addTodo(textController.text.toString()),
+                          todoBloc.add(AddTodo(textController.text.toString())),
                           Navigator.of(context).pop()
                         },
                     child: const Text('Save')),
@@ -30,9 +31,9 @@ class TodoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final todoCubit = context.read<TodoCubit>();
+    final todoBloc = context.read<TodoBloc>();
     return Scaffold(
-      body: BlocBuilder<TodoCubit, List<Todo>>(builder: (context, state) {
+      body: BlocBuilder<TodoBloc, List<Todo>>(builder: (context, state) {
         return ListView.builder(
           itemCount: state.length,
           itemBuilder: (context, index) {
@@ -42,9 +43,9 @@ class TodoView extends StatelessWidget {
               title: Text(todo.text),
               leading: Checkbox(
                   value: todo.isCompleted,
-                  onChanged: (value) => todoCubit.toggleTodo(todo)),
+                  onChanged: (value) => todoBloc.add(ToggleTodo(todo))),
               trailing: IconButton(
-                  onPressed: () => todoCubit.deleteTodo(todo),
+                  onPressed: () => todoBloc.add(DeleteTodo(todo)),
                   icon: const Icon(Icons.delete)),
             );
           },
